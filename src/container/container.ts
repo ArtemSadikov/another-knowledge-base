@@ -1,5 +1,6 @@
-import {HttpServer} from "../ui/http";
+import {HttpServer, UsersRouter} from "../ui/http";
 import {Postgres} from "../gateway/storage/postgres";
+import {ListUsersHandler} from "../ui/http/users/list-users.handler";
 
 type Dependencies = {
   config: {
@@ -29,20 +30,32 @@ export class Container {
       }
     };
 
+    const db: Pick<Dependencies, 'db'>['db'] = new Postgres(config.postgres);
+
+    const queries: Pick<Dependencies, 'queries'>['queries'] = {};
+    const commands: Pick<Dependencies, 'commands'>['commands'] = {};
+
+    const application: Pick<Dependencies, 'application'>['application'] = {
+      http: new HttpServer(
+        new UsersRouter(
+          new ListUsersHandler()
+        )
+      ),
+    };
+
     this.dependencies = {
       config,
-      application: {
-        http: new HttpServer(),
-      },
-      queries: {},
-      commands: {},
-      db: new Postgres(config.postgres),
+      queries,
+      commands,
+      application,
+      db,
     }
   }
 
   public async run(): Promise<void> {
     await this.dependencies.db.connect();
 
+    await this.dependencies.application.http.register('/v1');
     await this.dependencies.application.http.listen(this.dependencies.config.http.port)
   }
 }
