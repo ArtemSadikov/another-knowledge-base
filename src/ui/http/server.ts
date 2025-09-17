@@ -23,6 +23,8 @@ export class HttpServer {
 
   public async listen(port: number): Promise<void> {
     try {
+      console.info(this.server.printRoutes());
+
       await this.server.listen({ port });
     } catch (error) {
       console.log(error);

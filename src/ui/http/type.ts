@@ -1,20 +1,14 @@
 import type {
-  FastifyInstance, FastifyReply, FastifyRequest,
+  FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod,
   RouteOptions
 } from "fastify";
 
-export function Handler(params: Pick<RouteOptions, 'method' | 'url'>) {
-  abstract class BaseHandler {
-    public readonly method = params.method;
+export interface IHandler extends Pick<RouteOptions, 'method' | 'url'> {
+  handler: RouteHandlerMethod<any, any, any, any, any>
+}
 
-    public readonly url = params.url;
-
-    public abstract handle(req: FastifyRequest, reply: FastifyReply): any;
-
-    public readonly handler = this.handle;
-  }
-
-  return BaseHandler;
+export abstract class Handler<Req = FastifyRequest> {
+  public abstract handler(req: Req, reply: FastifyReply): any;
 }
 
 export interface IRouter {
@@ -23,7 +17,7 @@ export interface IRouter {
 
 export function Router(path: string) {
   abstract class BaseRouter implements IRouter {
-    protected abstract readonly routes: RouteOptions[];
+    protected abstract readonly routes: IHandler[];
 
     public register(server: FastifyInstance): FastifyInstance {
       return server.register((app, _, next) => {

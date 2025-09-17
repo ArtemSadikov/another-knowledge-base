@@ -1,6 +1,11 @@
 import {HttpServer, UsersRouter} from "../ui/http";
 import {Postgres} from "../gateway/storage/postgres";
-import {ListUsersHandler} from "../ui/http/users/list-users.handler";
+import {Command, Query} from "../api/type";
+import {RegisterUserCommand} from "../api/commands";
+import {AuthRouter, RegisterUserHandler} from "../ui/http/auth";
+import {Handler} from "../ui/http/type";
+import {UsersService} from "../domain/user/users.service";
+import {UsersStore} from "../gateway/storage/postgres/stores";
 
 type Dependencies = {
   config: {
@@ -11,9 +16,12 @@ type Dependencies = {
       dsn: string;
     }
   }
+  stores: Record<string, any>,
   application: { http: HttpServer }
-  queries: {},
-  commands: {},
+  queries: Record<string, Query>,
+  commands: Record<string, Command>,
+  handlers: Record<string, Handler>,
+  services: Record<string, any>,
   db: Postgres;
 }
 
@@ -32,14 +40,29 @@ export class Container {
 
     const db: Pick<Dependencies, 'db'>['db'] = new Postgres(config.postgres);
 
-    const queries: Pick<Dependencies, 'queries'>['queries'] = {};
-    const commands: Pick<Dependencies, 'commands'>['commands'] = {};
+    const stores = {
+      usersStore: new UsersStore(db),
+    }
+
+    const services = {
+      usersService: new UsersService(stores.usersStore),
+    }
+
+    const queries = {};
+    const commands = {
+      registerUser: new RegisterUserCommand(services.usersService),
+    };
+
+    const handlers = {
+      registerUser: new RegisterUserHandler(commands.registerUser)
+    }
 
     const application: Pick<Dependencies, 'application'>['application'] = {
       http: new HttpServer(
-        new UsersRouter(
-          new ListUsersHandler()
-        )
+        new AuthRouter(
+          handlers.registerUser,
+        ),
+        new UsersRouter()
       ),
     };
 
@@ -48,6 +71,9 @@ export class Container {
       queries,
       commands,
       application,
+      handlers,
+      services,
+      stores,
       db,
     }
   }
