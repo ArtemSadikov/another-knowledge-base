@@ -1,13 +1,13 @@
 import Fastify, {FastifyInstance} from 'fastify';
 
-class HttpServer {
-  constructor(private readonly server: FastifyInstance) {
-    this.server = Fastify({
-      logger: true,
-    });
+export class HttpServer {
+  private readonly server: FastifyInstance
+
+  constructor() {
+    this.server = Fastify({ logger: true });
   }
 
-  public async listen(port: number) {
+  public async listen(port: number): Promise<void> {
     try {
       await this.server.listen({ port });
     } catch (error) {
