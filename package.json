@@ -5,12 +5,13 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "migrate": "node-pg-migrate up -m db/migrations",
-    "migrate:down": "node-pg-migrate down -m db/migrations",
-    "migrate:redo": "node-pg-migrate redo -m db/migrations",
-    "migrate:create": "node-pg-migrate create -j ts -m db/migrations"
+    "migrate": "node-pg-migrate up -j sql -m db/migrations",
+    "migrate:down": "node-pg-migrate down -j sql -m db/migrations",
+    "migrate:redo": "node-pg-migrate redo -j sql -m db/migrations",
+    "migrate:create": "node-pg-migrate create -j sql -m db/migrations"
   },
   "dependencies": {
+    "dotenv": "17.2.2",
     "fastify": "5.6.0",
     "node-pg-migrate": "8.0.3",
     "pg": "8.16.3"
