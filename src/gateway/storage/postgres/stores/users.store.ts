@@ -46,4 +46,38 @@ export class UsersStore implements IUserStore {
 
     return User.from(result.id, result.email);
   }
+
+  public async update(...users: User[]): Promise<User[]> {
+    const res: User[] = [];
+
+    if (!users.length) {
+      return res;
+    }
+
+    await this.db.pg.query('START TRANSACTION');
+
+    try {
+      const query = `
+          UPDATE users
+          SET email      = $1,
+              updated_at = now()
+          WHERE id = $2
+          RETURNING *
+      `
+      for (const user of users) {
+        const { rows } = await this.db.pg.query<UserEntity>({ text: query, values: [user.email, user.id]});
+        if (rows.length) {
+          res.push(User.from(rows[0].id, rows[0].email));
+        }
+      }
+
+      await this.db.pg.query('COMMIT');
+    } catch (error) {
+      await this.db.pg.query('ROLLBACK');
+
+      throw error;
+    }
+
+    return res;
+  }
 }

@@ -5,6 +5,7 @@ export class User {
     public readonly id: string,
     public readonly email: UserEmail,
     private _password: string = '',
+    private _isDeleted: boolean = false,
   ) {}
 
   public static new(email: string): User {
@@ -21,5 +22,13 @@ export class User {
 
   public get password() {
     return this._password;
+  }
+
+  public remove() {
+    this._isDeleted = true;
+  }
+
+  public get isDeleted() {
+    return this._isDeleted;
   }
 }

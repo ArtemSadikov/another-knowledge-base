@@ -3,6 +3,7 @@ import {User} from "./models";
 export interface IUserStore {
   create(...users: User[]): Promise<User[]>;
   findByID(id: string): Promise<User>;
+  update(...users: User[]): Promise<User[]>;
 }
 
 export interface IPasswordHasher {

@@ -1,6 +1,7 @@
 import {Middleware} from "../type";
 import {FastifyRequest} from "fastify";
 import {AuthorizeCommand} from "../../../api/commands/authorize.command";
+import {AuthorizedRequest} from "./type";
 
 export class AuthGuard extends Middleware('auth') {
   constructor(
@@ -14,6 +15,6 @@ export class AuthGuard extends Middleware('auth') {
       throw new Error("Not authorized");
     }
 
-    await this.authCommand.execute({ token: req.headers.authorization });
+    (req as AuthorizedRequest).user = await this.authCommand.execute({token: req.headers.authorization});
   };
 }

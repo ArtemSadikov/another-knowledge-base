@@ -1,5 +1,5 @@
-import type {
-  FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod,
+import {
+  FastifyInstance, FastifyReply, FastifyRequest, RouteHandler, RouteHandlerMethod,
   RouteOptions
 } from "fastify";
 
@@ -35,10 +35,10 @@ export function Router(path: string) {
   abstract class BaseRouter implements IRouter {
     protected abstract readonly routes: IHandler[];
 
-    public register(server: FastifyInstance): FastifyInstance {
+    public register(server: FastifyInstance & { auth: RouteHandler }): FastifyInstance {
       return server.register((app, _, next) => {
         for (const route of this.routes) {
-          app.route(route)
+          app.route({ ...route, onRequest: [server.auth] })
         }
 
         next();

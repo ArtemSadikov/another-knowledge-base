@@ -3,6 +3,6 @@ export abstract class Query<Req = void, Res = void> {
 }
 
 export abstract class Command<Req = unknown, Res = unknown> {
-  public abstract execute(req: Req): Res
+  public abstract execute(req: Req): Res | Promise<Res>
 }
 

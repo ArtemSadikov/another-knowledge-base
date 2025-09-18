@@ -1,12 +1,12 @@
 import {AuthorizationService} from "../../domain/auth";
 import {Command} from "../type";
-import {UsersService} from "../../domain/user";
+import {User, UsersService} from "../../domain/user";
 
 type Request = {
   token: string;
 };
 
-type Response = void;
+type Response = User
 
 export class AuthorizeCommand extends Command<Request, Response> {
   constructor(
@@ -19,6 +19,6 @@ export class AuthorizeCommand extends Command<Request, Response> {
   public async execute(req: Request): Promise<Response> {
     const payload = await this.authService.authorize(req.token);
 
-    await this.usersService.findByID(payload.uid);
+    return  this.usersService.findByID(payload.uid);
   }
 }

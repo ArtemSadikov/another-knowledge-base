@@ -1,12 +1,13 @@
-import Fastify, {FastifyInstance} from 'fastify';
+import Fastify, {FastifyInstance, RouteHandler} from 'fastify';
 import {IRouter} from "./type";
 
 export class HttpServer {
-  private readonly server: FastifyInstance
+  private readonly server: FastifyInstance & { auth: RouteHandler }
 
   private readonly routers: IRouter[] = [];
 
   constructor(...routers: IRouter[]) {
+    // @ts-ignore
     this.server = Fastify({ logger: true });
     this.routers = routers;
   }

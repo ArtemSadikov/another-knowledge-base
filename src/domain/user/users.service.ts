@@ -22,7 +22,17 @@ export class UsersService {
     return res;
   }
 
-  public async findByID(userId: string): Promise<User> {
-    return this.usersStore.findByID(userId);
+  public async findByID(id: string): Promise<User> {
+    return this.usersStore.findByID(id);
+  }
+
+  public async remove(user: User): Promise<void> {
+    if (user.isDeleted) {
+      throw new Error('User already removed');
+    }
+
+    user.remove();
+
+    await this.usersStore.update(user);
   }
 }
