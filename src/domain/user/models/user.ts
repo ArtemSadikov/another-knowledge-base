@@ -3,7 +3,7 @@ import {UserEmail} from "./email";
 export class User {
   private constructor(
     public readonly id: string,
-    public readonly email: UserEmail,
+    private _email: UserEmail,
     private _password: string = '',
     private _isDeleted: boolean = false,
   ) {}
@@ -30,5 +30,13 @@ export class User {
 
   public get isDeleted() {
     return this._isDeleted;
+  }
+
+  public get email(): UserEmail {
+    return this._email;
+  }
+
+  updateEmail(email: string): void {
+    this._email = new UserEmail(email);
   }
 }

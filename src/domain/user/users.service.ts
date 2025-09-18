@@ -33,4 +33,10 @@ export class UsersService {
 
     await this.usersStore.softDelete(user);
   }
+
+  public async update(user: User): Promise<User> {
+    const [result] = await this.usersStore.update(user);
+
+    return result;
+  }
 }

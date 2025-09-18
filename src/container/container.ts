@@ -13,6 +13,8 @@ import {AuthorizeCommand} from "../api/commands/authorize.command";
 import {AuthGuard} from "../ui/http/middlewares";
 import {RemoveUserHandler} from "../ui/http/users/remove-user.handler";
 import {RemoveUserCommand} from "../api/commands/remove-user.command";
+import {UpdateUserCommand} from "../api/commands/update-user.command";
+import {UpdateUserHandler} from "../ui/http/users/update-user.handler";
 
 type Dependencies = {
   config: {
@@ -74,6 +76,9 @@ export class Container {
       ),
       removeUser: new RemoveUserCommand(
         services.usersService,
+      ),
+      updateUser: new UpdateUserCommand(
+        services.usersService,
       )
     };
 
@@ -84,6 +89,7 @@ export class Container {
     const handlers = {
       registerUser: new RegisterUserHandler(commands.registerUser),
       removeUser: new RemoveUserHandler(commands.removeUser),
+      updateUser: new UpdateUserHandler(commands.updateUser),
     }
 
     const application: Pick<Dependencies, 'application'>['application'] = {
@@ -94,6 +100,7 @@ export class Container {
         new UsersRouter(
           middlewares.auth,
           handlers.removeUser,
+          handlers.updateUser
         )
       ),
     };
