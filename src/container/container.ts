@@ -16,6 +16,7 @@ import {RemoveUserCommand} from "../api/commands/remove-user.command";
 import {UpdateUserCommand} from "../api/commands/update-user.command";
 import {UpdateUserHandler} from "../ui/http/users/update-user.handler";
 import {ArticlesStore} from "../gateway/storage/postgres/stores/articles.store";
+import {ArticleService} from "../domain/article";
 
 type Dependencies = {
   config: {
@@ -63,6 +64,9 @@ export class Container {
       ),
       authorizationService: new AuthorizationService(
         new JwtTokenService('super_jwt_secret')
+      ),
+      articlesService: new ArticleService(
+        stores.articlesStore,
       )
     }
 

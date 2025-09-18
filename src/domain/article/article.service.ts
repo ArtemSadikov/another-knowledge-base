@@ -1,5 +1,5 @@
 import {IArticleStore} from "./type";
-import {Article, ArticleAuthor} from "./models";
+import {Article} from "./models";
 
 export class ArticleService {
   constructor(private readonly articlesStore: IArticleStore) {}
