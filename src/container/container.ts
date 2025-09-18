@@ -6,6 +6,7 @@ import {AuthRouter, RegisterUserHandler} from "../ui/http/auth";
 import {Handler} from "../ui/http/type";
 import {UsersService} from "../domain/user/users.service";
 import {UsersStore} from "../gateway/storage/postgres/stores";
+import {BcryptPasswordHasherService} from "../common/password/bcrypt-hasher.service";
 
 type Dependencies = {
   config: {
@@ -45,7 +46,10 @@ export class Container {
     }
 
     const services = {
-      usersService: new UsersService(stores.usersStore),
+      usersService: new UsersService(
+        stores.usersStore,
+        new BcryptPasswordHasherService()
+      ),
     }
 
     const queries = {};
