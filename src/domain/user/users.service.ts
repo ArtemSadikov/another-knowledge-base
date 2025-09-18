@@ -31,8 +31,6 @@ export class UsersService {
       throw new Error('User already removed');
     }
 
-    user.remove();
-
-    await this.usersStore.update(user);
+    await this.usersStore.softDelete(user);
   }
 }

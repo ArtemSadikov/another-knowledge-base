@@ -6,6 +6,9 @@ export class InvalidArgumentError extends Error {
 
 export class NotFound extends Error {
   constructor(message?: string) {
-    super('not found' + message ? `, ${message}` : '');
+    if (message) {
+      super(message);
+    }
+    super('not found');
   }
 }

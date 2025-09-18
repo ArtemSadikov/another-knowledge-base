@@ -11,6 +11,8 @@ import {AuthorizationService} from "../domain/auth";
 import {JwtTokenService} from "../common/token/jwt-token.service";
 import {AuthorizeCommand} from "../api/commands/authorize.command";
 import {AuthGuard} from "../ui/http/middlewares";
+import {RemoveUserHandler} from "../ui/http/users/remove-user.handler";
+import {RemoveUserCommand} from "../api/commands/remove-user.command";
 
 type Dependencies = {
   config: {
@@ -69,6 +71,9 @@ export class Container {
       authorize: new AuthorizeCommand(
         services.authorizationService,
         services.usersService,
+      ),
+      removeUser: new RemoveUserCommand(
+        services.usersService,
       )
     };
 
@@ -77,7 +82,8 @@ export class Container {
     }
 
     const handlers = {
-      registerUser: new RegisterUserHandler(commands.registerUser)
+      registerUser: new RegisterUserHandler(commands.registerUser),
+      removeUser: new RemoveUserHandler(commands.removeUser),
     }
 
     const application: Pick<Dependencies, 'application'>['application'] = {
@@ -87,6 +93,7 @@ export class Container {
         ),
         new UsersRouter(
           middlewares.auth,
+          handlers.removeUser,
         )
       ),
     };

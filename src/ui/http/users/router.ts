@@ -15,7 +15,7 @@ export class UsersRouter extends Router('users') {
       // @ts-ignore
       handler: this.removeUserHandler.handler,
       url: '/:id',
-      guards: [this.authGuard],
+      onRequest: [this.authGuard.handler],
       method: 'DELETE',
     }
   ];

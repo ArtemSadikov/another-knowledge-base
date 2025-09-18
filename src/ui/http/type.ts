@@ -19,7 +19,7 @@ export function Middleware(name: string) {
 }
 
 export interface IHandler extends Pick<RouteOptions, 'method' | 'url'> {
-  guards?: IMiddleware[];
+  onRequest?: Pick<IMiddleware, 'handler'>['handler'][];
   handler: RouteHandlerMethod<any, any, any, any, any>
 }
 
@@ -35,10 +35,10 @@ export function Router(path: string) {
   abstract class BaseRouter implements IRouter {
     protected abstract readonly routes: IHandler[];
 
-    public register(server: FastifyInstance & { auth: RouteHandler }): FastifyInstance {
+    public register(server: FastifyInstance): FastifyInstance {
       return server.register((app, _, next) => {
         for (const route of this.routes) {
-          app.route({ ...route, onRequest: [server.auth] })
+          app.route(route)
         }
 
         next();

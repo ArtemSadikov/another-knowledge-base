@@ -65,7 +65,7 @@ export class UsersStore implements IUserStore {
           RETURNING *
       `
       for (const user of users) {
-        const { rows } = await this.db.pg.query<UserEntity>({ text: query, values: [user.email, user.id]});
+        const { rows } = await this.db.pg.query<UserEntity>({ text: query, values: [user.email.value, user.id]});
         if (rows.length) {
           res.push(User.from(rows[0].id, rows[0].email));
         }
@@ -79,5 +79,29 @@ export class UsersStore implements IUserStore {
     }
 
     return res;
+  }
+
+  public async softDelete(...users: User[]): Promise<void> {
+    if (!users.length) {
+      return;
+    }
+
+    await this.db.pg.query('START TRANSACTION');
+
+    try {
+      const query = `
+          UPDATE users
+          SET deleted_at = now()
+          WHERE id = $1
+      `;
+
+      for (const user of users) {
+        await this.db.pg.query<UserEntity>({ text: query, values: [user.id] })
+      }
+
+      await this.db.pg.query('COMMIT');
+    } catch (error) {
+      await this.db.pg.query('ROLLBACK');
+    }
   }
 }

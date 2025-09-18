@@ -9,11 +9,11 @@ export class User {
   ) {}
 
   public static new(email: string): User {
-    return this.from(crypto.randomUUID(), email);
+    return this.from(crypto.randomUUID(), email, false);
   }
 
-  public static from(id: string, email: string): User {
-    return new User(id, new UserEmail(email));
+  public static from(id: string, email: string, isDeleted: boolean = false): User {
+    return new User(id, new UserEmail(email), '', isDeleted);
   }
 
   public setPassword(value: string) {

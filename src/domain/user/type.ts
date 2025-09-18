@@ -4,6 +4,7 @@ export interface IUserStore {
   create(...users: User[]): Promise<User[]>;
   findByID(id: string): Promise<User>;
   update(...users: User[]): Promise<User[]>;
+  softDelete(...users: User[]): Promise<void>;
 }
 
 export interface IPasswordHasher {
