@@ -5,9 +5,7 @@ export class ArticleService {
   constructor(private readonly articlesStore: IArticleStore) {}
 
   public async create(title: string, content: string, authorId: string, tags: string[]): Promise<Article> {
-    const author = new ArticleAuthor(authorId);
-
-    const article = Article.new(title, content, author);
+    const article = Article.new(title, content, authorId);
 
     if (tags.length > 0) {
       article.setTags(tags)

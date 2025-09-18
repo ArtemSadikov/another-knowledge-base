@@ -11,8 +11,30 @@ export class Article {
     private _isDeleted: boolean = false,
   ) {}
 
-  public static new(title: string, content: string, author: ArticleAuthor): Article {
-    return new Article(crypto.randomUUID(), title, content, false, author, []);
+  public static new(title: string, content: string, authorId: string): Article {
+    return Article.from(crypto.randomUUID(), title, content, false, authorId, [], false);
+  }
+
+  public static from(
+    id: string,
+    title: string,
+    content: string,
+    published: boolean,
+    authorId: string,
+    tags: string[],
+    isDeleted: boolean
+  ): Article {
+    const author = new ArticleAuthor(authorId);
+
+    return new Article(
+      id,
+      title,
+      content,
+      published,
+      author,
+      tags,
+      isDeleted
+    )
   }
 
   public setTags(tags: string[]) {
@@ -52,7 +74,11 @@ export class Article {
     this._isDeleted = true;
   }
 
-  public tags() {
+  public get tags() {
     return this._tags;
+  }
+
+  public get isDeleted() {
+    return this._isDeleted;
   }
 }

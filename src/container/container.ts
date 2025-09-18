@@ -15,6 +15,7 @@ import {RemoveUserHandler} from "../ui/http/users/remove-user.handler";
 import {RemoveUserCommand} from "../api/commands/remove-user.command";
 import {UpdateUserCommand} from "../api/commands/update-user.command";
 import {UpdateUserHandler} from "../ui/http/users/update-user.handler";
+import {ArticlesStore} from "../gateway/storage/postgres/stores/articles.store";
 
 type Dependencies = {
   config: {
@@ -52,6 +53,7 @@ export class Container {
 
     const stores = {
       usersStore: new UsersStore(db),
+      articlesStore: new ArticlesStore(db),
     }
 
     const services = {

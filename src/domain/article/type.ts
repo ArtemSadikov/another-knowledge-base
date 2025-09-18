@@ -3,6 +3,7 @@ import {Article} from "./models";
 export interface IArticleStore extends IArticleFinder, IArticleSaver, IArticleRemover {}
 
 export type FindArticlesParams = Partial<{
+  id: string;
   userId: string;
   published: boolean;
   tags: string[];
