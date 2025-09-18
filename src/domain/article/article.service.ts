@@ -1,4 +1,4 @@
-import {IArticleStore} from "./type";
+import {FindArticlesParams, IArticleStore} from "./type";
 import {Article} from "./models";
 
 export class ArticleService {
@@ -14,6 +14,12 @@ export class ArticleService {
     const [res] = await this.articlesStore.save(article);
 
     return res;
+  }
+
+  public async unpublish(article: Article): Promise<void> {
+    article.unpublish();
+
+    await this.articlesStore.save(article);
   }
 
   public async publish(article: Article): Promise<void> {
@@ -36,15 +42,21 @@ export class ArticleService {
     return res;
   }
 
-  public async getUserArticles(userId: string, published = true): Promise<Article[]> {
-    return this.articlesStore.find({ userId, published });
+  public async getUserArticles(userId: string, published: boolean | null = null): Promise<Article[]> {
+    const query: FindArticlesParams = { userId };
+
+    if (published !== null) {
+      query.published = published;
+    }
+
+    return this.articlesStore.find(query);
   }
 
   public async getByID(id: string): Promise<Article> {
     return this.articlesStore.findByID(id);
   }
 
-  public async findByTags(tags: string[]): Promise<Article[]> {
+  public async findByTags(...tags: string[]): Promise<Article[]> {
     return this.articlesStore.find({ tags });
   }
 }

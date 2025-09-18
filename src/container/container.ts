@@ -17,6 +17,13 @@ import {UpdateUserCommand} from "../api/commands/update-user.command";
 import {UpdateUserHandler} from "../ui/http/users/update-user.handler";
 import {ArticlesStore} from "../gateway/storage/postgres/stores/articles.store";
 import {ArticleService} from "../domain/article";
+import {CreateArticleCommand} from "../api/commands/create-article.command";
+import {ListOwnerArticlesQuery, ListArticlesQuery} from "../api/queries";
+import {PublishArticleCommand} from "../api/commands/publish-article.command";
+import {UnpublishArticleCommand} from "../api/commands/unpublish-article.command";
+import {GetArticleByIdQuery} from "../api/queries/get-article-by-id.query";
+import {UpdateArticleCommand} from "../api/commands/update-article.command";
+import {RemoveArticleCommand} from "../api/commands/remove-article.command";
 
 type Dependencies = {
   config: {
@@ -40,6 +47,12 @@ type Dependencies = {
 export class Container {
   private readonly dependencies: Dependencies;
 
+  private static _config: any;
+
+  static get config(): any {
+    return this._config;
+  }
+
   constructor() {
     const config: Pick<Dependencies, 'config'>['config'] = {
       http: {
@@ -49,6 +62,8 @@ export class Container {
         dsn: 'postgresql://postgres:password@127.0.0.1:5432/postgres',
       }
     };
+
+    Container._config = config;
 
     const db: Pick<Dependencies, 'db'>['db'] = new Postgres(config.postgres);
 
@@ -70,7 +85,18 @@ export class Container {
       )
     }
 
-    const queries = {};
+    const queries = {
+      listOwnerArticles: new ListOwnerArticlesQuery(
+        services.articlesService,
+      ),
+      listArticles: new ListArticlesQuery(
+        services.articlesService,
+      ),
+      getArticleByID: new GetArticleByIdQuery(
+        services.articlesService,
+      )
+    };
+
     const commands = {
       registerUser: new RegisterUserCommand(
         services.usersService,
@@ -85,6 +111,21 @@ export class Container {
       ),
       updateUser: new UpdateUserCommand(
         services.usersService,
+      ),
+      createArticle: new CreateArticleCommand(
+        services.articlesService,
+      ),
+      publishArticle: new PublishArticleCommand(
+        services.articlesService,
+      ),
+      unpublishArticle: new UnpublishArticleCommand(
+        services.articlesService,
+      ),
+      updateArticle: new UpdateArticleCommand(
+        services.articlesService,
+      ),
+      removeArticle: new RemoveArticleCommand(
+        services.articlesService,
       )
     };
 
