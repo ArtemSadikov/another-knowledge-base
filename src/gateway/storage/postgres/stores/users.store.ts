@@ -2,6 +2,7 @@ import {Postgres} from "../database";
 import {UserEntity} from "./entities";
 import {User} from "../../../../domain/user";
 import {IUserStore} from "../../../../domain/user/type";
+import {NotFound} from "../../../../common/errors";
 
 export class UsersStore implements IUserStore {
   constructor(private readonly db: Postgres) {}
@@ -25,5 +26,24 @@ export class UsersStore implements IUserStore {
     });
 
     return rows.map(r => User.from(r.id, r.email));
+  }
+
+  public async findByID(id: string): Promise<User> {
+    const query = `
+      SELECT * FROM users WHERE id = $1
+    `;
+
+    const { rows } = await this.db.pg.query<UserEntity>({
+      text: query,
+      values: [id],
+    });
+
+    if (!rows.length) {
+      throw new NotFound();
+    }
+
+    const result = rows[0];
+
+    return User.from(result.id, result.email);
   }
 }

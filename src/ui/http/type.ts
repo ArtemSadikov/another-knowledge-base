@@ -3,7 +3,23 @@ import type {
   RouteOptions
 } from "fastify";
 
+export interface IMiddleware {
+  name: string;
+  handler: RouteHandlerMethod<any, any, any, any, any>
+}
+
+export function Middleware(name: string) {
+  abstract class BaseMiddleware implements IMiddleware {
+    public readonly name: string = name;
+
+    public abstract handler(req: FastifyRequest, reply: FastifyReply): any
+  }
+
+  return BaseMiddleware;
+}
+
 export interface IHandler extends Pick<RouteOptions, 'method' | 'url'> {
+  guards?: IMiddleware[];
   handler: RouteHandlerMethod<any, any, any, any, any>
 }
 

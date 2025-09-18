@@ -1,11 +1,12 @@
-import {RouteOptions} from "fastify";
-import {Router} from "../type";
+import {IHandler, Router} from "../type";
+import {AuthGuard} from "../middlewares";
 
 export class UsersRouter extends Router('users') {
-  constructor() {
+  constructor(
+    private readonly authGuard: AuthGuard,
+  ) {
     super();
   }
 
-  protected routes: RouteOptions[] = [
-  ];
+  protected routes: IHandler[] = [];
 }

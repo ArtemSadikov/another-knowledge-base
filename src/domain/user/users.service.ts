@@ -21,4 +21,8 @@ export class UsersService {
 
     return res;
   }
+
+  public async findByID(userId: string): Promise<User> {
+    return this.usersStore.findByID(userId);
+  }
 }

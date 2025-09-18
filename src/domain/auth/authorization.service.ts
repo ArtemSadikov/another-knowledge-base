@@ -1,4 +1,4 @@
-import {ITokenSigner, Token} from "./type";
+import {ITokenSigner, Token, TokenPayload} from "./type";
 
 export class AuthorizationService {
   constructor(private readonly token: ITokenSigner) {}
@@ -7,15 +7,13 @@ export class AuthorizationService {
     return this.token.generate({uid: userId});
   }
 
-  public async authorize(userId: string, token: Token): Promise<void> {
+  public async authorize(token: Token): Promise<TokenPayload> {
     const payload = await this.token.verify(token);
 
     if (!payload) {
       throw new Error("Unable to verify token");
     }
 
-    if (payload.uid !== userId) {
-      throw new Error("Not matched user for token");
-    }
+    return payload;
   }
 }

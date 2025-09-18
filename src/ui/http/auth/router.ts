@@ -10,6 +10,7 @@ export class AuthRouter extends Router('/auth') {
 
   protected routes: IHandler[] = [
     {
+      guards: [],
       method: 'POST',
       url: '/register',
       handler: this.registerUser.handler,

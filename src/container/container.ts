@@ -3,12 +3,14 @@ import {Postgres} from "../gateway/storage/postgres";
 import {Command, Query} from "../api/type";
 import {RegisterUserCommand} from "../api/commands";
 import {AuthRouter, RegisterUserHandler} from "../ui/http/auth";
-import {Handler} from "../ui/http/type";
+import {Handler, IMiddleware} from "../ui/http/type";
 import {UsersService} from "../domain/user";
 import {UsersStore} from "../gateway/storage/postgres/stores";
 import {BcryptPasswordHasherService} from "../common/password/bcrypt-hasher.service";
 import {AuthorizationService} from "../domain/auth";
 import {JwtTokenService} from "../common/token/jwt-token.service";
+import {AuthorizeCommand} from "../api/commands/authorize.command";
+import {AuthGuard} from "../ui/http/middlewares";
 
 type Dependencies = {
   config: {
@@ -25,6 +27,7 @@ type Dependencies = {
   commands: Record<string, Command>,
   handlers: Record<string, Handler>,
   services: Record<string, any>,
+  middlewares: Record<string, IMiddleware>,
   db: Postgres;
 }
 
@@ -63,7 +66,15 @@ export class Container {
         services.usersService,
         services.authorizationService,
       ),
+      authorize: new AuthorizeCommand(
+        services.authorizationService,
+        services.usersService,
+      )
     };
+
+    const middlewares = {
+      auth: new AuthGuard(commands.authorize),
+    }
 
     const handlers = {
       registerUser: new RegisterUserHandler(commands.registerUser)
@@ -74,7 +85,9 @@ export class Container {
         new AuthRouter(
           handlers.registerUser,
         ),
-        new UsersRouter()
+        new UsersRouter(
+          middlewares.auth,
+        )
       ),
     };
 
@@ -86,6 +99,7 @@ export class Container {
       handlers,
       services,
       stores,
+      middlewares,
       db,
     }
   }
