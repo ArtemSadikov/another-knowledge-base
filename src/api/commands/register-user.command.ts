@@ -1,5 +1,6 @@
 import {Command} from "../type";
 import {UsersService} from "../../domain/user";
+import {AuthorizationService} from "../../domain/auth";
 
 type Request = {
   email: string;
@@ -13,6 +14,7 @@ type Response = {
 export class RegisterUserCommand extends Command<Request, Promise<Response>> {
   constructor(
     private readonly usersService: UsersService,
+    private readonly authorizationService: AuthorizationService,
   ) {
     super();
   }
@@ -23,8 +25,8 @@ export class RegisterUserCommand extends Command<Request, Promise<Response>> {
       req.password,
     );
 
-    console.log(user);
+    const accessToken = await this.authorizationService.generateToken(user.id);
 
-    throw new Error("Method not implemented.");
+    return { accessToken };
   }
 }
